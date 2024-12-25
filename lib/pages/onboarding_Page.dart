@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 // ignore: unused_import
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:language_learning_app/pages/choose_lang/language_choice_screen.dart';
+import 'package:language_learning_app/pages/login_signUp/login.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       backgroundColor: Colors.white,
       body: OnboardingContent(),
     );
@@ -16,6 +16,8 @@ class OnboardingPage extends StatelessWidget {
 }
 
 class OnboardingContent extends StatefulWidget {
+  const OnboardingContent({super.key});
+
   @override
   _OnboardingContentState createState() => _OnboardingContentState();
 }
@@ -94,8 +96,7 @@ class _OnboardingContentState extends State<OnboardingContent> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      LanguageSelectionApp(),  
+                  builder: (context) => const Login(),
                 ),
               );
             },
@@ -117,6 +118,12 @@ class _OnboardingContentState extends State<OnboardingContent> {
         TextButton(
           onPressed: () {
             // Action for "Log in" text
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Login(),
+              ),
+            );
           },
           child: const Text(
             "Already have an account? Log in",
