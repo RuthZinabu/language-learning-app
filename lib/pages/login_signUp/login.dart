@@ -1,10 +1,68 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
 import 'package:language_learning_app/pages/login_signUp/signup.dart';
+import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override
+  State<Login> createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+
+  Future<void> _login() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.loginWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+      setState(() {
+        _isLoading = false;
+      });
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CurrentLanguageSelectionScreen(),
+        ),
+      );
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (e is FirebaseAuthException) {
+        switch (e.code) {
+          case 'user-not-found':
+            errorMessage = 'No user found for that email.';
+            break;
+          case 'wrong-password':
+            errorMessage = 'Wrong password provided.';
+            break;
+          default:
+            errorMessage = 'An error occurred. Please try again.';
+        }
+      }
+      print("Error: $e");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +89,7 @@ class Login extends StatelessWidget {
           children: [
             const SizedBox(height: 30),
             const Text(
-              "Login ",
+              "Login",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -40,9 +98,10 @@ class Login extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             TextField(
+              controller: _emailController,
               decoration: InputDecoration(
                 labelText: "Email Address",
-                hintText: "Placeholder text",
+                hintText: "Enter your email",
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -50,10 +109,11 @@ class Login extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             TextField(
+              controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
                 labelText: "Password",
-                hintText: "Password",
+                hintText: "Enter your password",
                 suffixIcon: const Icon(Icons.visibility_off),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -62,15 +122,7 @@ class Login extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const CurrentLanguageSelectionScreen(),
-                  ),
-                );
-              },
+              onPressed: _isLoading ? null : _login,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF410FA3),
                 minimumSize: const Size(double.infinity, 50),
@@ -78,10 +130,12 @@ class Login extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                "Login",
-                style: TextStyle(fontSize: 18),
-              ),
+              child: _isLoading
+                  ? const CircularProgressIndicator(color: Colors.white)
+                  : const Text(
+                      "Login",
+                      style: TextStyle(fontSize: 18),
+                    ),
             ),
             const Spacer(),
             Center(
@@ -96,13 +150,17 @@ class Login extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // Add Facebook login functionality here
+                        },
                         icon: Image.asset('assets/images/facebook.png'),
                         iconSize: 40,
                       ),
                       const SizedBox(width: 20),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // Add Google login functionality here
+                        },
                         icon: Image.asset('assets/images/google.png'),
                         iconSize: 40,
                       ),
@@ -115,21 +173,21 @@ class Login extends StatelessWidget {
                       style: const TextStyle(color: Colors.grey),
                       children: [
                         TextSpan(
-                            text: "Sign Up",
-                            style: const TextStyle(
-                              color: Color(0xFF410FA3),
-                              fontWeight: FontWeight.bold,
-                            ),
-                            // Add action if needed
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const SignupScreen(),
-                                  ),
-                                );
-                              }),
+                          text: "Sign Up",
+                          style: const TextStyle(
+                            color: Color(0xFF410FA3),
+                            fontWeight: FontWeight.bold,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SignupScreen(),
+                                ),
+                              );
+                            },
+                        ),
                       ],
                     ),
                   ),

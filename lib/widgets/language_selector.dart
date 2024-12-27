@@ -16,73 +16,62 @@ class LanguageSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return ListView(
+      padding: const EdgeInsets.all(20),
       children: [
-        Padding(
-          padding: const EdgeInsets.all(20),
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
-        SizedBox(
-          height: 300, // Set a fixed height for the ListView
-          child: ListView.builder(
-            itemCount: languages.length,
-            itemBuilder: (context, index) {
-              final language = languages[index];
-              return GestureDetector(
-                onTap: () => onLanguageSelected(language['name']!),
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: selectedLanguage == language['name']
-                        ? const Color(0xFF5BA890)
-                        : Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: selectedLanguage == language['name']
-                          ? const Color(0xFF410FA3)
-                          : Colors.grey.shade300,
-                      width: 1,
+        const SizedBox(height: 20),
+        ...languages.map((language) {
+          return GestureDetector(
+            onTap: () => onLanguageSelected(language['name']!),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              decoration: BoxDecoration(
+                color: selectedLanguage == language['name']
+                    ? const Color(0xFF5BA890)
+                    : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: selectedLanguage == language['name']
+                      ? const Color(0xFF410FA3)
+                      : Colors.grey.shade300,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  ClipOval(
+                    child: Image.asset(
+                      language['flag']!,
+                      height: 45,
+                      width: 45,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      ClipOval(
-                        child: Image.asset(
-                          language['flag']!,
-                          height: 45,
-                          width: 45,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      const SizedBox(width: 15),
-                      Text(
-                        language['name']!,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: selectedLanguage == language['name']
-                              ? Colors.white
-                              : Colors.black,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 15),
+                  Text(
+                    language['name']!,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: selectedLanguage == language['name']
+                          ? Colors.white
+                          : Colors.black,
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ],
     );
   }

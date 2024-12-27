@@ -35,6 +35,8 @@ dependencies:
   google_translate: ^0.0.6
   flutter_tts: ^3.2.2
   translator: ^0.1.7
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.16.0
   
 
 
