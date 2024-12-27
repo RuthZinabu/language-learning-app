@@ -5,6 +5,7 @@ import 'package:language_learning_app/pages/home_page/favorites_screen.dart';
 import 'package:language_learning_app/pages/profile_page/profile_screen.dart';
 import 'package:language_learning_app/pages/home_page/home_content.dart';
 
+
 class HomeScreen extends StatefulWidget {
   final String currentLanguage;
   final String targetLanguage;
@@ -57,12 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
               elevation: 0,
               toolbarHeight: 100,
               automaticallyImplyLeading: false,
-              // leading: IconButton(
-              //   icon: const Icon(Icons.arrow_back, color: Colors.white),
-              //   onPressed: () {
-              //     Navigator.pop(context);
-              //   },
-              // ),
+              leading: IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white),
+                onPressed: () {
+                  
+                },
+              ),
               flexibleSpace: Padding(
                 padding:
                     const EdgeInsets.only(left: 16.0, right: 16.0, top: 40.0),

@@ -48,15 +48,17 @@ class _TargetLanguageSelectionScreenState
       ),
       body: Column(
         children: [
-          LanguageSelector(
-            title: 'What language do you want to learn?',
-            languages: languages,
-            selectedLanguage: selectedTargetLanguage,
-            onLanguageSelected: (selected) {
-              setState(() {
-                selectedTargetLanguage = selected;
-              });
-            },
+          Expanded(
+            child: LanguageSelector(
+              title: 'What language do you want to learn?',
+              languages: languages,
+              selectedLanguage: selectedTargetLanguage,
+              onLanguageSelected: (selected) {
+                setState(() {
+                  selectedTargetLanguage = selected;
+                });
+              },
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(20),

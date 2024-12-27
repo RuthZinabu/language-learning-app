@@ -16,7 +16,7 @@ void main() async {
             appId: "1:216855887697:web:f5e5a73fef8200343ddd70",
             measurementId: "G-CBMWWKK566"));
   } else {
-    Firebase.initializeApp();
+    await Firebase.initializeApp();
   }
 
   runApp(const LanguageApp());

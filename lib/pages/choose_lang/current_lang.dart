@@ -3,7 +3,7 @@ import 'package:language_learning_app/pages/choose_lang/target_lang.dart';
 import 'package:language_learning_app/widgets/language_selector.dart';
 
 class CurrentLanguageSelectionScreen extends StatefulWidget {
-  const CurrentLanguageSelectionScreen({Key? key}) : super(key: key);
+  const CurrentLanguageSelectionScreen({super.key});
 
   @override
   _CurrentLanguageSelectionScreenState createState() =>
@@ -45,15 +45,17 @@ class _CurrentLanguageSelectionScreenState
       ),
       body: Column(
         children: [
-          LanguageSelector(
-            title: 'What is your current language?',
-            languages: languages,
-            selectedLanguage: selectedCurrentLanguage,
-            onLanguageSelected: (selected) {
-              setState(() {
-                selectedCurrentLanguage = selected;
-              });
-            },
+          Expanded(
+            child: LanguageSelector(
+              title: 'What is your current language?',
+              languages: languages,
+              selectedLanguage: selectedCurrentLanguage,
+              onLanguageSelected: (selected) {
+                setState(() {
+                  selectedCurrentLanguage = selected;
+                });
+              },
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(20),
