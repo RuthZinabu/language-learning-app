@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:language_learning_app/pages/login_signUp/login.dart';
 
 class OnboardingPage extends StatelessWidget {
@@ -45,6 +43,22 @@ class _OnboardingContentState extends State<OnboardingContent> {
     },
   ];
 
+  void _onNextPressed() {
+    if (_currentPage == onboardingData.length - 1) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Login(),
+        ),
+      );
+    } else {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -88,18 +102,11 @@ class _OnboardingContentState extends State<OnboardingContent> {
           ),
         ),
         const SizedBox(height: 20),
-        // Choose Language Button
+        // Next Button
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Login(),
-                ),
-              );
-            },
+            onPressed: _onNextPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.deepPurple,
               shape: RoundedRectangleBorder(
@@ -107,9 +114,11 @@ class _OnboardingContentState extends State<OnboardingContent> {
               ),
               minimumSize: const Size(double.infinity, 50),
             ),
-            child: const Text(
-              "Choose a language",
-              style: TextStyle(fontSize: 18, color: Colors.white),
+            child: Text(
+              _currentPage == onboardingData.length - 1
+                  ? "Get Started"
+                  : "Next",
+              style: const TextStyle(fontSize: 18, color: Colors.white),
             ),
           ),
         ),
@@ -117,7 +126,6 @@ class _OnboardingContentState extends State<OnboardingContent> {
         // Log in Text
         TextButton(
           onPressed: () {
-            // Action for "Log in" text
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -131,7 +139,6 @@ class _OnboardingContentState extends State<OnboardingContent> {
                 color: Colors.black, decoration: TextDecoration.underline),
           ),
         ),
-
         const SizedBox(height: 20),
       ],
     );

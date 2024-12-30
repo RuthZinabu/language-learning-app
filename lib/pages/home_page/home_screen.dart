@@ -4,7 +4,9 @@ import 'package:language_learning_app/pages/translator_page/translation.dart';
 import 'package:language_learning_app/pages/home_page/favorites_screen.dart';
 import 'package:language_learning_app/pages/profile_page/profile_screen.dart';
 import 'package:language_learning_app/pages/home_page/home_content.dart';
-
+//import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   final String currentLanguage;
@@ -22,17 +24,38 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+  String userName = 'Guest';
 
   late final List<Widget> _widgetOptions;
+
+  Future<void> _fetchUserName() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        final doc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
+        if (doc.exists) {
+          userName = doc.data()?['first-name'] ?? 'User';
+        } else {
+          userName = 'User';
+        }
+      } else {
+        userName = 'Guest';
+      }
+    } catch (e) {
+      userName = 'Error';
+      print('Error fetching user name: $e');
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _fetchUserName();
     _widgetOptions = <Widget>[
       HomeContent(
-                  currentLanguage: widget.currentLanguage,
-          targetLanguage: widget.targetLanguage
-      ), // Home content widget
+          currentLanguage: widget.currentLanguage,
+          targetLanguage: widget.targetLanguage), // Home content widget
       Courses(
           currentLanguage: widget.currentLanguage,
           targetLanguage: widget.targetLanguage),
@@ -56,17 +79,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ? AppBar(
               backgroundColor: const Color(0xFF410FA3), // Purple color
               elevation: 0,
-              toolbarHeight: 100,
+              toolbarHeight: 90,
               automaticallyImplyLeading: false,
-              leading: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white),
-                onPressed: () {
-                  
-                },
-              ),
+              // leading: IconButton(
+              //   icon: const Icon(Icons.menu, color: Colors.white),
+              //   onPressed: () {},
+              // ),
               flexibleSpace: Padding(
                 padding:
-                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 40.0),
+                    const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -77,26 +98,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundColor: Colors.white,
                           child: ClipOval(
                             child: Image.asset(
-                              'assets/images/img5.png',
-                              fit: BoxFit.cover,
+                              'assets/images/female_avator.png',
+                              fit: BoxFit.fill,
                               width: 50,
                               height: 50,
                             ),
                           ),
                         ),
                         const SizedBox(width: 12),
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Hello, Kebron',
+                              'Hello, $userName',
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
-                            SizedBox(height: 4),
                             Text(
                               'What would you like to learn today?',
                               style: TextStyle(

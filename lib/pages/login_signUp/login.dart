@@ -64,36 +64,54 @@ class _LoginState extends State<Login> {
     }
   }
 
+  Future<void> _loginWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+      setState(() {
+        _isLoading = false;
+      });
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CurrentLanguageSelectionScreen(),
+        ),
+      );
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Failed to login with Google. Please try again.')),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF410FA3),
-        elevation: 0,
-        title: const Text(
-          'Login',
-          style: TextStyle(color: Colors.white),
-        ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            const Text(
-              "Login",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            const Center(
+              child: Text(
+                "Login",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -121,21 +139,23 @@ class _LoginState extends State<Login> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _isLoading ? null : _login,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF410FA3),
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+            Center(
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _login,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF410FA3),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text(
+                        "Login",
+                        style: TextStyle(fontSize: 18),
+                      ),
               ),
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                      "Login",
-                      style: TextStyle(fontSize: 18),
-                    ),
             ),
             const Spacer(),
             Center(
@@ -149,19 +169,18 @@ class _LoginState extends State<Login> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
+                     IconButton(
+                        onPressed: _isLoading ? null : _loginWithGoogle,
+                        icon: Image.asset('assets/images/google.png'),
+                        iconSize: 40,
+                      ),
+                      const SizedBox(width: 20),
+                      
+                       IconButton(
                         onPressed: () {
                           // Add Facebook login functionality here
                         },
                         icon: Image.asset('assets/images/facebook.png'),
-                        iconSize: 40,
-                      ),
-                      const SizedBox(width: 20),
-                      IconButton(
-                        onPressed: () {
-                          // Add Google login functionality here
-                        },
-                        icon: Image.asset('assets/images/google.png'),
                         iconSize: 40,
                       ),
                     ],

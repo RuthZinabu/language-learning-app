@@ -1,36 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:language_learning_app/pages/home_page/home_content.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  ProfilePage({super.key});
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,  
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF410FA3), // Purple color
         elevation: 0,
+        automaticallyImplyLeading: false,
         centerTitle: true,
         title: const Text(
           "Profile",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    HomeContent(currentLanguage: 'en', targetLanguage: 'fr'),
-              ),
-            );
-          },
-        ),
-        actions: const [
-          Icon(Icons.more_horiz, color: Colors.white),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            tooltip: 'More',
+            onPressed: () {
+              _scaffoldKey.currentState?.openEndDrawer(); // Open the end drawer
+            },
+          ),
         ],
+      ),
+      endDrawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Color(0xFF410FA3),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+               
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings, color: Color(0xFF410FA3)),
+              title: const Text("Settings"),
+              onTap: () {
+                Navigator.pop(context);  
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info, color: Color(0xFF410FA3)),
+              title: const Text("About"),
+              onTap: () {
+                Navigator.pop(context);  
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout, color: Color(0xFF410FA3)),
+              title: const Text("Logout"),
+              onTap: () {
+                Navigator.pop(context);  
+              },
+            ),
+          ],
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -42,10 +76,11 @@ class ProfilePage extends StatelessWidget {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.grey[200],
-                child: const Icon(
-                  Icons.flash_on,
-                  size: 40,
-                  color: Color(0xFF410FA3), // Purple color
+                child: Image.asset(
+                  'assets/images/female_avator.png',
+                  fit: BoxFit.fill,
+                  width: 70,
+                  height: 70,
                 ),
               ),
               const SizedBox(height: 16),

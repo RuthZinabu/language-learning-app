@@ -12,7 +12,20 @@
           "package_name": "com.example.language_learning_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "216855887697-qj6ooegii9qa1jntnb2oveiva4sjt7q6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.language_learning_app",
+            "certificate_hash": "d9515b31e6321257422212a8e601d20c990a24cf"
+          }
+        },
+        {
+          "client_id": "216855887697-3p8af1g66j1p8eknaldel6622rfkg57b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBZYtUKf3VLCs-Px5PqPqfsEzp6Mbk8UeE"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "216855887697-3p8af1g66j1p8eknaldel6622rfkg57b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "216855887697-amvnre47d8n0c50q5hn30ga60s5evaff.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.languageLearningApp"
+              }
+            }
+          ]
         }
       }
     }

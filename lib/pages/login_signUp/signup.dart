@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:language_learning_app/pages/login_signUp/login.dart';
+import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
 import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -45,6 +46,36 @@ class _SignupScreenState extends State<SignupScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authService.signInWithGoogle();
+      setState(() {
+        _isLoading = false;
+      });
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CurrentLanguageSelectionScreen(),
+        ),
+      );
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Failed to login with Google. Please try again.')),
       );
     } finally {
       setState(() {
@@ -164,7 +195,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _signUp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF5B7BFE),
+                    backgroundColor: const Color(0xFF410FA3),
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -190,14 +221,14 @@ class _SignupScreenState extends State<SignupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            onPressed: () {},
-                            icon: Image.asset('assets/images/facebook.png'),
+                            onPressed: _isLoading ? null : _loginWithGoogle,
+                            icon: Image.asset('assets/images/google.png'),
                             iconSize: 40,
                           ),
                           const SizedBox(width: 20),
                           IconButton(
                             onPressed: () {},
-                            icon: Image.asset('assets/images/google.png'),
+                            icon: Image.asset('assets/images/facebook.png'),
                             iconSize: 40,
                           ),
                         ],

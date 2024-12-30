@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:language_learning_app/pages/learning_levels/wordPhrase.dart';
+import 'package:language_learning_app/pages/learning_levels/numAlphabet.dart';
 
 class Courses extends StatefulWidget {
   final String currentLanguage;
@@ -191,15 +192,31 @@ class _CoursesState extends State<Courses> {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => WordPhrasePage(
+                if (title == 'Alphabet and Numbers') {
+                  // Navigate to NumberScreen if the second button is clicked
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NumberScreen(
+                         title: title,
+                        currentLanguage: widget.currentLanguage,
+                        targetLanguage: widget.targetLanguage,
+                      ),
+                    ),
+                  );
+                } else {
+                  // Navigate to WordPhrasePage for other buttons
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WordPhrasePage(
                         title: title,
                         currentLanguage: widget.currentLanguage,
-                        targetLanguage: widget.targetLanguage),
-                  ),
-                );
+                        targetLanguage: widget.targetLanguage,
+                      ),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

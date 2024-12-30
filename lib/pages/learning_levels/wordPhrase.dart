@@ -19,25 +19,6 @@ class WordPhrasePage extends StatefulWidget {
 }
 
 class _WordPhrasePageState extends State<WordPhrasePage> {
-  final List<Map<String, String>> words = [
-    {'word': 'Hello', 'translation': ''},
-    {'word': 'Goodbye', 'translation': ''},
-    {'word': 'Please', 'translation': ''},
-    {'word': 'Thank you', 'translation': ''},
-    {'word': 'Yes', 'translation': ''},
-    {'word': 'No', 'translation': ''},
-    // more words
-  ];
-  final List<Map<String, String>> phrases = [
-    {'word': 'Be careful', 'translation': ''},
-    {'word': 'Good idea', 'translation': ''},
-    {'word': 'I feel good', 'translation': ''},
-    {'word': 'I am hungry', 'translation': ''},
-    {'word': 'Never mind', 'translation': ''},
-    {'word': 'Try it', 'translation': ''},
-    // more phrases
-  ];
-
   final FlutterTts _flutterTts = FlutterTts();
   final GoogleTranslator _translator = GoogleTranslator();
 
@@ -53,9 +34,26 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
     // Add more mappings as needed
   };
 
-  String getLanguageCode(String languageName) {
-    return languageCodeMapping[languageName] ?? 'en'; // Default to English
-  }
+  final List<String> englishWords = [
+    'Hello',
+    'Goodbye',
+    'Please',
+    'Thank you',
+    'Yes',
+    'No',
+  ];
+
+  final List<String> englishPhrases = [
+    'Be careful',
+    'Good idea',
+    'I feel good',
+    'I am hungry',
+    'Never mind',
+    'Try it',
+  ];
+
+  List<Map<String, String>> translatedWords = [];
+  List<Map<String, String>> translatedPhrases = [];
 
   @override
   void initState() {
@@ -63,43 +61,88 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
     _fetchTranslations();
   }
 
-  Future<void> _fetchTranslations() async {
-    final fromLanguageCode = getLanguageCode(widget.currentLanguage);
-    final toLanguageCode = getLanguageCode(widget.targetLanguage);
+  String getLanguageCode(String languageName) {
+    return languageCodeMapping[languageName] ?? 'en'; // Default to English
+  }
 
-    for (var word in words) {
+  Future<void> _fetchTranslations() async {
+    final fromLanguageCode = getLanguageCode('English');
+    final currentLanguageCode = getLanguageCode(widget.currentLanguage);
+    final targetLanguageCode = getLanguageCode(widget.targetLanguage);
+
+    for (var word in englishWords) {
       try {
-        final translation = await _translator.translate(
-          word['word']!,
-          from: fromLanguageCode,
-          to: toLanguageCode,
+        // Translate English to Current Language (if not English)
+        final currentTranslation = widget.currentLanguage == 'English'
+            ? word
+            : (await _translator.translate(
+                word,
+                from: fromLanguageCode,
+                to: currentLanguageCode,
+              ))
+                .text;
+
+        // Translate Current Language (or English) to Target Language
+        final targetTranslation = await _translator.translate(
+          currentTranslation,
+          from: widget.currentLanguage == 'English'
+              ? fromLanguageCode
+              : currentLanguageCode,
+          to: targetLanguageCode,
         );
+
         setState(() {
-          word['translation'] = translation.text;
+          translatedWords.add({
+            'word': currentTranslation,
+            'translation': targetTranslation.text,
+          });
         });
       } catch (e) {
         setState(() {
-          word['translation'] = 'Translation not available';
+          translatedWords.add({
+            'word': word,
+            'translation': 'Translation not available',
+          });
         });
-        print('Error translating word "${word['word']}": $e');
+        print('Error translating word "$word": $e');
       }
     }
 
-    for (var phrase in phrases) {
+    for (var phrase in englishPhrases) {
       try {
-        final translation = await _translator.translate(
-          phrase['word']!,
-          from: fromLanguageCode,
-          to: toLanguageCode,
+        // Translate English to Current Language (if not English)
+        final currentTranslation = widget.currentLanguage == 'English'
+            ? phrase
+            : (await _translator.translate(
+                phrase,
+                from: fromLanguageCode,
+                to: currentLanguageCode,
+              ))
+                .text;
+
+        // Translate Current Language (or English) to Target Language
+        final targetTranslation = await _translator.translate(
+          currentTranslation,
+          from: widget.currentLanguage == 'English'
+              ? fromLanguageCode
+              : currentLanguageCode,
+          to: targetLanguageCode,
         );
+
         setState(() {
-          phrase['translation'] = translation.text;
+          translatedPhrases.add({
+            'word': currentTranslation,
+            'translation': targetTranslation.text,
+          });
         });
       } catch (e) {
         setState(() {
-          phrase['translation'] = 'Translation not available';
+          translatedPhrases.add({
+            'word': phrase,
+            'translation': 'Translation not available',
+          });
         });
-        print('Error translating phrase "${phrase['word']}": $e');
+        print('Error translating phrase "$phrase": $e');
       }
     }
   }
@@ -114,20 +157,19 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            '${widget.title} - ${widget.currentLanguage} to ${widget.targetLanguage}'),
+        title: Text('${widget.title}'),
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
-        itemCount: words.length + phrases.length,
+        itemCount: translatedWords.length + translatedPhrases.length,
         itemBuilder: (context, index) {
-          if (index < words.length) {
-            final wordPhrase = words[index];
+          if (index < translatedWords.length) {
+            final wordPhrase = translatedWords[index];
             return _buildWordPhraseCard(
                 wordPhrase['word']!, wordPhrase['translation']!);
           } else {
-            final phraseIndex = index - words.length;
-            final wordPhrase = phrases[phraseIndex];
+            final phraseIndex = index - translatedWords.length;
+            final wordPhrase = translatedPhrases[phraseIndex];
             return _buildWordPhraseCard(
                 wordPhrase['word']!, wordPhrase['translation']!);
           }

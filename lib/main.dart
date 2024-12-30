@@ -1,20 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:language_learning_app/pages/splash_Page.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
+
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     await Firebase.initializeApp(
-        options: const FirebaseOptions(
-            apiKey: "AIzaSyALI7blhv7auaSQhhj5cC3lRqgWMw2vWIg",
-            authDomain: "language-learning-app-b3181.firebaseapp.com",
-            projectId: "language-learning-app-b3181",
-            storageBucket: "language-learning-app-b3181.firebasestorage.app",
-            messagingSenderId: "216855887697",
-            appId: "1:216855887697:web:f5e5a73fef8200343ddd70",
-            measurementId: "G-CBMWWKK566"));
+        options: FirebaseOptions(
+            apiKey: dotenv.env['API_KEY'] ?? '',
+            authDomain: dotenv.env['authDomain'] ?? '',
+            projectId: dotenv.env['projectId'] ?? '',
+            storageBucket: dotenv.env['storageBucket'] ?? '',
+            messagingSenderId: dotenv.env['messagingSenderId'] ?? '',
+            appId: dotenv.env['appId'] ?? '',
+            measurementId: dotenv.env['measurementId'] ?? ''));
   } else {
     await Firebase.initializeApp();
   }
