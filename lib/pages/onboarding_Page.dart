@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:language_learning_app/pages/login_signUp/login.dart';
 
 class OnboardingPage extends StatelessWidget {
@@ -45,12 +46,7 @@ class _OnboardingContentState extends State<OnboardingContent> {
 
   void _onNextPressed() {
     if (_currentPage == onboardingData.length - 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Login(),
-        ),
-      );
+      context.go('/login');
     } else {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -126,12 +122,7 @@ class _OnboardingContentState extends State<OnboardingContent> {
         // Log in Text
         TextButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const Login(),
-              ),
-            );
+            context.go('/login');
           },
           child: const Text(
             "Already have an account? Log in",

@@ -4,8 +4,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 
 class WordPhrasePage extends StatefulWidget {
   final String title;
-  final String currentLanguage;
-  final String targetLanguage;
+  final String? currentLanguage;
+  final String? targetLanguage;
 
   WordPhrasePage({
     Key? key,
@@ -31,7 +31,7 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
     'Korean': 'ko',
     'Italian': 'it',
     'Amharic': 'am',
-    // Add more mappings as needed
+    // more mappings as needed
   };
 
   final List<String> englishWords = [
@@ -67,8 +67,8 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
 
   Future<void> _fetchTranslations() async {
     final fromLanguageCode = getLanguageCode('English');
-    final currentLanguageCode = getLanguageCode(widget.currentLanguage);
-    final targetLanguageCode = getLanguageCode(widget.targetLanguage);
+    final currentLanguageCode = getLanguageCode(widget.currentLanguage!);
+    final targetLanguageCode = getLanguageCode(widget.targetLanguage!);
 
     for (var word in englishWords) {
       try {
@@ -148,7 +148,7 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
   }
 
   Future<void> _speak(String text) async {
-    final languageCode = getLanguageCode(widget.targetLanguage);
+    final languageCode = getLanguageCode(widget.targetLanguage!);
     await _flutterTts.setLanguage(languageCode);
     await _flutterTts.speak(text);
   }
@@ -212,6 +212,7 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
                 _speak(translation);
               },
             ),
+            
           ],
         ),
       ),

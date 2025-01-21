@@ -2,7 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart';
+import 'package:language_learning_app/database/user_repo.dart';
+import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
+import 'package:language_learning_app/pages/home_page/home_screen.dart';
+import 'package:language_learning_app/pages/login_signUp/login.dart';
+import 'package:language_learning_app/pages/login_signUp/signup.dart';
+import 'package:language_learning_app/pages/onboarding_Page.dart';
+import 'package:language_learning_app/pages/profile_page/profile_screen.dart';
 import 'package:language_learning_app/pages/splash_Page.dart';
+import 'package:go_router/go_router.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -21,7 +30,7 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-
+  Get.put(UserRepository());
   runApp(const LanguageApp());
 }
 
@@ -30,9 +39,59 @@ class LanguageApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    final GoRouter _router = GoRouter(
+      initialLocation: '/splash',
+      routes: [
+        GoRoute(
+          path: '/splash',
+          builder: (context, state) => const SplashScreen(),
+        ),
+        GoRoute(
+          path: '/onboarding',
+          builder: (context, state) => const OnboardingPage(),
+        ),
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const Login(),
+        ),
+        GoRoute(
+          path: '/sign-up',
+          builder: (context, state) => const SignupScreen(),
+        ),
+        GoRoute(
+          path: '/home',
+          builder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>?;
+
+            final currentLanguage =
+                extra?['currentLanguage'] ?? 'DefaultLanguage1';
+            final targetLanguage =
+                extra?['targetLanguage'] ?? 'DefaultLanguage2';
+
+            return HomeScreen(
+              currentLanguage: currentLanguage,
+              targetLanguage: targetLanguage,
+            );
+          },
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => ProfilePage(
+            userFirstName: '',
+          ), // Replace 'someArgument' with the actual argument needed
+        ),
+        GoRoute(
+          path: '/current-language-selection',
+          builder: (context, state) => const CurrentLanguageSelectionScreen(),
+        ),
+      ],
+    );
+
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      routerDelegate: _router.routerDelegate,
+      routeInformationParser: _router.routeInformationParser,
+      routeInformationProvider: _router.routeInformationProvider,
     );
   }
 }

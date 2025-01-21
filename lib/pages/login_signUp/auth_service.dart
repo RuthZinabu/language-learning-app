@@ -13,26 +13,26 @@ class AuthService {
   User? get currentUser => _auth.currentUser;
 
   /// Sign up with email and password
-  Future<User?> signUpWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      return userCredential.user;
-    } on FirebaseAuthException catch (e) {
-      throw FirebaseAuthException(
-        code: e.code,
-        message: e.message ?? 'An unknown error occurred during sign-up.',
-      );
-    } catch (e) {
-      throw Exception('An unknown error occurred: $e');
-    }
-  }
+  // Future<User?> signUpWithEmailAndPassword({
+  //   required String email,
+  //   required String password,
+  // }) async {
+  //   try {
+  //     UserCredential userCredential =
+  //         await _auth.createUserWithEmailAndPassword(
+  //       email: email,
+  //       password: password,
+  //     );
+  //     return userCredential.user;
+  //   } on FirebaseAuthException catch (e) {
+  //     throw FirebaseAuthException(
+  //       code: e.code,
+  //       message: e.message ?? 'An unknown error occurred during sign-up.',
+  //     );
+  //   } catch (e) {
+  //     throw Exception('An unknown error occurred: $e');
+  //   }
+  // }
 
   /// Log in with email and password
   Future<User?> loginWithEmailAndPassword({

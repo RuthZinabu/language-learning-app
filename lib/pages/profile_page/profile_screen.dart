@@ -1,154 +1,166 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:language_learning_app/database/user_model.dart';
+import 'package:language_learning_app/database/user_repo.dart';
 
-class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key});
+class ProfilePage extends StatefulWidget {
+  final String userFirstName;
+  ProfilePage({super.key, required this.userFirstName});
+
+  @override
+  _ProfilePageState createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  late String userFirstName;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
+  void initState() {
+    super.initState();
+    userFirstName = widget.userFirstName; // Initialize from the passed value
+    _fetchUserDetails(); // Fetch user details
+  }
+
+  Future<void> _fetchUserDetails() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null && user.email != null) {
+        UserModel? userModel =
+            await UserRepository.instance.getUserByEmail(user.email!);
+        if (userModel != null) {
+          setState(() {
+            userFirstName = userModel.first_name; // Update state
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching user details: $e");
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,  
+      key: _scaffoldKey,
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF410FA3), // Purple color
         elevation: 0,
         automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: const Text(
-          "Profile",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            tooltip: 'More',
-            onPressed: () {
-              _scaffoldKey.currentState?.openEndDrawer(); // Open the end drawer
-            },
-          ),
-        ],
-      ),
-      endDrawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+        backgroundColor: const Color(0xFF410FA3),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Color(0xFF410FA3),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-               
-              ),
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () => Navigator.pop(context),
             ),
-            ListTile(
-              leading: const Icon(Icons.settings, color: Color(0xFF410FA3)),
-              title: const Text("Settings"),
-              onTap: () {
-                Navigator.pop(context);  
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.info, color: Color(0xFF410FA3)),
-              title: const Text("About"),
-              onTap: () {
-                Navigator.pop(context);  
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Color(0xFF410FA3)),
-              title: const Text("Logout"),
-              onTap: () {
-                Navigator.pop(context);  
-              },
-            ),
+            const Icon(Icons.share, color: Colors.white),
           ],
         ),
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Profile Image
-              CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.grey[200],
-                child: Image.asset(
-                  'assets/images/female_avator.png',
-                  fit: BoxFit.fill,
-                  width: 70,
-                  height: 70,
+        // Wrap the entire body with SingleChildScrollView
+        child: Column(
+          children: [
+            // Profile Section
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF410FA3), Color(0xFF7349FF)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
               ),
-              const SizedBox(height: 16),
-              // Profile Name and Join Date
-              const Text(
-                "Kebron",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                "Joined March 2024",
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 16),
-              // Add Language Button
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  side: const BorderSide(color: Color(0xFF410FA3)),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.add, color: Color(0xFF410FA3)),
-                    SizedBox(width: 4),
-                    Text(
-                      "Add Language",
-                      style: TextStyle(color: Color(0xFF410FA3)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 24),
-              // My Activity Section
-              _buildSectionHeader("My Activity", () {}),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  _buildActivityCard("Total hours", "8h : 20 min"),
-                  _buildActivityCard("This Week", ""),
+                  const CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 50,
+                    backgroundImage:
+                        AssetImage('assets/images/female_avator.png'),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    "${userFirstName.toUpperCase()}",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 24),
-              // Achievement Section
-              _buildSectionHeader("Achievement", () {}),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),
+            const SizedBox(height: 16),
+
+            // Add Language Button (from second code)
+            ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFF410FA3)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(CupertinoIcons.add, color: Color(0xFF410FA3)),
+                  SizedBox(width: 4),
+                  Text(
+                    "Add Language",
+                    style: TextStyle(color: Color(0xFF410FA3)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            const SizedBox(height: 24),
+
+            // Achievement Section
+            _buildSectionHeader("Achievement", () {}),
+            const SizedBox(height: 16),
+            SingleChildScrollView(
+              // Wrap the Row in a SingleChildScrollView
+              scrollDirection:
+                  Axis.horizontal, // Set the scroll direction to horizontal
+              child: Row(
                 children: [
                   _buildAchievementCard(
                       "German Language", "Level 1", "assets/flags/de.png"),
                   _buildAchievementCard(
-                      "French Language", "Level 2", "assets/flags/fr.png"),
+                      "French Language", "Level 2", "assets/flags/us.png"),
+                  _buildAchievementCard(
+                      "French Language", "Level 2", "assets/flags/kr.png"),
+                  _buildAchievementCard(
+                      "French Language", "Level 2", "assets/flags/it.png"),
+                  _buildAchievementCard(
+                      "French Language", "Level 2", "assets/flags/et.png"),
+                  _buildAchievementCard(
+                      "French Language", "Level 2", "assets/flags/in.png"),
+                   
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // Section Header Widget
+  // Section Header Widget (from second code)
   Widget _buildSectionHeader(String title, VoidCallback onViewAllPressed) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -168,46 +180,21 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Activity Card Widget
-  Widget _buildActivityCard(String title, String subtitle) {
-    return Expanded(
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                style:
-                    const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Achievement Card Widget
+  // Achievement Card Widget (from second code)
   Widget _buildAchievementCard(String title, String level, String flagUrl) {
-    return Expanded(
+    return SizedBox(
+      width: 150, // Set a fixed width for each achievement card
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(12)), // Curved corners for the card
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.network(
+              Image.asset(
                 flagUrl,
                 height: 40,
                 width: 40,

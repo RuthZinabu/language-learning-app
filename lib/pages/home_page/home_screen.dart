@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:language_learning_app/database/user_repo.dart';
+import 'package:language_learning_app/database/user_model.dart';
 import 'package:language_learning_app/pages/learning_levels/courses.dart';
 import 'package:language_learning_app/pages/translator_page/translation.dart';
 import 'package:language_learning_app/pages/home_page/favorites_screen.dart';
 import 'package:language_learning_app/pages/profile_page/profile_screen.dart';
 import 'package:language_learning_app/pages/home_page/home_content.dart';
-//import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeScreen extends StatefulWidget {
   final String currentLanguage;
   final String targetLanguage;
+  
 
   const HomeScreen({
     Key? key,
@@ -24,45 +25,41 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  String userName = 'Guest';
-
   late final List<Widget> _widgetOptions;
-
-  Future<void> _fetchUserName() async {
-    try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid != null) {
-        final doc =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
-        if (doc.exists) {
-          userName = doc.data()?['first-name'] ?? 'User';
-        } else {
-          userName = 'User';
-        }
-      } else {
-        userName = 'Guest';
-      }
-    } catch (e) {
-      userName = 'Error';
-      print('Error fetching user name: $e');
-    }
-  }
+  String userFirstName = "Guest"; // Default name
 
   @override
   void initState() {
     super.initState();
-    _fetchUserName();
+    _fetchUserDetails();
     _widgetOptions = <Widget>[
       HomeContent(
           currentLanguage: widget.currentLanguage,
-          targetLanguage: widget.targetLanguage), // Home content widget
+          targetLanguage: widget.targetLanguage),
       Courses(
           currentLanguage: widget.currentLanguage,
           targetLanguage: widget.targetLanguage),
       Translator(),
       Favorites(),
-      ProfilePage(),
+      ProfilePage(userFirstName: userFirstName),
     ];
+  }
+
+  Future<void> _fetchUserDetails() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null && user.email != null) {
+        UserModel? userModel =
+            await UserRepository.instance.getUserByEmail(user.email!);
+        if (userModel != null) {
+          setState(() {
+            userFirstName = userModel.first_name;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching user details: $e");
+    }
   }
 
   void _onItemTapped(int index) {
@@ -74,17 +71,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Light background
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: _selectedIndex != 4
           ? AppBar(
-              backgroundColor: const Color(0xFF410FA3), // Purple color
+              backgroundColor: const Color(0xFF410FA3),
               elevation: 0,
               toolbarHeight: 90,
               automaticallyImplyLeading: false,
-              // leading: IconButton(
-              //   icon: const Icon(Icons.menu, color: Colors.white),
-              //   onPressed: () {},
-              // ),
               flexibleSpace: Padding(
                 padding:
                     const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0),
@@ -110,14 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Hello, $userName',
-                              style: TextStyle(
+                              'Hello, $userFirstName',
+                              style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
                             ),
-                            Text(
+                            const Text(
                               'What would you like to learn today?',
                               style: TextStyle(
                                 fontSize: 14,

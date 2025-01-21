@@ -1,8 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
-import 'package:language_learning_app/pages/login_signUp/signup.dart';
+import 'package:go_router/go_router.dart';
 import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
 
 class Login extends StatefulWidget {
@@ -31,13 +31,35 @@ class _LoginState extends State<Login> {
       setState(() {
         _isLoading = false;
       });
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CurrentLanguageSelectionScreen(),
-        ),
-      );
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Check Firestore for language preferences
+        final userDoc = await FirebaseFirestore.instance
+            .collection('Users')
+            .where("email", isEqualTo: _emailController.text.trim())
+            .limit(1)
+            .get()
+            .then((querySnapshot) => querySnapshot.docs.first);
+        if (userDoc.exists) {
+          final data = userDoc.data();
+          if (data['currentLanguage'] != null &&
+              data['targetLanguage'] != null) {
+            // If languages are already selected, redirect to HomeScreen
+            // ignore: use_build_context_synchronously
+            context.go(
+              '/home', // Replace '/home' with your actual home route
+              extra: {
+                'currentLanguage': data['currentLanguage'],
+                'targetLanguage': data['targetLanguage'],
+              },
+            );
+          } else {
+            // If no languages are selected, redirect to language selection
+            context.go('/current-language-selection');
+          }
+        }
+      }
     } catch (e) {
       String errorMessage = e.toString();
       if (e is FirebaseAuthException) {
@@ -74,13 +96,33 @@ class _LoginState extends State<Login> {
       setState(() {
         _isLoading = false;
       });
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CurrentLanguageSelectionScreen(),
-        ),
-      );
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        // Check Firestore for language preferences
+        final userDoc = await FirebaseFirestore.instance
+            .collection('Users')
+            .doc(user.uid)
+            .get();
+        if (userDoc.exists) {
+          final data = userDoc.data();
+          if (data != null &&
+              data['currentLanguage'] != null &&
+              data['targetLanguage'] != null) {
+            // If languages are already selected, redirect to HomeScreen
+            context.go(
+              '/home',
+              extra: {
+                'currentLanguage': data['currentLanguage'],
+                'targetLanguage': data['targetLanguage'],
+              },
+            );
+          } else {
+            // If no languages are selected, redirect to language selection
+            context.go('/current-language-selection');
+          }
+        }
+      }
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -169,14 +211,13 @@ class _LoginState extends State<Login> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                     IconButton(
+                      IconButton(
                         onPressed: _isLoading ? null : _loginWithGoogle,
                         icon: Image.asset('assets/images/google.png'),
                         iconSize: 40,
                       ),
                       const SizedBox(width: 20),
-                      
-                       IconButton(
+                      IconButton(
                         onPressed: () {
                           // Add Facebook login functionality here
                         },
@@ -199,12 +240,7 @@ class _LoginState extends State<Login> {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignupScreen(),
-                                ),
-                              );
+                              context.go('/sign-up');
                             },
                         ),
                       ],

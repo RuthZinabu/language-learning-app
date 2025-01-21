@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:language_learning_app/pages/home_page/home_screen.dart';
 import 'package:language_learning_app/widgets/language_selector.dart';
@@ -26,6 +28,28 @@ class _TargetLanguageSelectionScreenState
     {"name": "Italian", "flag": "assets/flags/it.png"},
     {"name": "Amharic", "flag": "assets/flags/et.png"},
   ];
+
+  Future<void> saveTargetLang(String userId, String targetLanguage) async {
+    try {
+      // Use the set method to create or update the document
+      await FirebaseFirestore.instance.collection('Users').doc(userId).set(
+        {
+          'targetLanguage': targetLanguage,
+        },
+        SetOptions(
+            merge:
+                true), // Merge updates the existing fields without overwriting the entire document
+      );
+      print('Target language saved: $targetLanguage');
+    } catch (e) {
+      print('Error saving target language: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to save target language. Please try again.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,16 +87,30 @@ class _TargetLanguageSelectionScreenState
           Padding(
             padding: const EdgeInsets.all(20),
             child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => HomeScreen(
-                      currentLanguage: widget.currentLanguage,
-                      targetLanguage: selectedTargetLanguage,
+              onPressed: () async {
+                // Get the logged-in user's ID
+                final user = FirebaseAuth.instance.currentUser;
+                if (user != null) {
+                  // Save the current language to Firestore
+                  await saveTargetLang(user.uid, selectedTargetLanguage);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HomeScreen(
+                        currentLanguage: widget.currentLanguage,
+                        targetLanguage: selectedTargetLanguage,
+                      ),
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  // Show an error if the user is not logged in
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('User not logged in. Please log in again.'),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF410FA3),

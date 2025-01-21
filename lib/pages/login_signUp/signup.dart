@@ -1,7 +1,9 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:language_learning_app/pages/login_signUp/login.dart';
-import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
+import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:language_learning_app/database/user_model.dart';
+import 'package:language_learning_app/database/user_repo.dart';
 import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -22,6 +24,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isLoading = false;
 
+  final userRepo = Get.put(UserRepository());
+
+  void creteUser(UserModel user) {
+    userRepo.createUser(user);
+  }
+
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -29,20 +37,23 @@ class _SignupScreenState extends State<SignupScreen> {
       _isLoading = true;
     });
 
-    try {
-      await _authService.signUpWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+    final user = (UserModel(
+      first_name: _firstNameController.text.trim(),
+      last_name: _lastNameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+      currentLanguage: null,
+      targetLanguage: null,
+    ));
 
+    try {
+      _SignupScreenState().creteUser(user);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sign up successful!')),
       );
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Login()),
-      );
+      // ignore: use_build_context_synchronously
+      context.go('/login');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
@@ -65,12 +76,7 @@ class _SignupScreenState extends State<SignupScreen> {
         _isLoading = false;
       });
       // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CurrentLanguageSelectionScreen(),
-        ),
-      );
+      context.go('/current-language-selection');
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -247,12 +253,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Login(),
-                                    ),
-                                  );
+                                  context.go('/login');
                                 },
                             ),
                           ],
