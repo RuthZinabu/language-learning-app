@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String userFirstName;
   final VoidCallback onNotificationsPressed;
- 
 
   const HomeAppBar({
     Key? key,
     required this.userFirstName,
     required this.onNotificationsPressed,
- 
   }) : super(key: key);
 
   @override
@@ -58,13 +56,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                     ),
                   ],
-                ),
-                const Spacer(),
-                IconButton(
-                  onPressed: onNotificationsPressed,
-                  icon: const Icon(Icons.notifications_outlined),
-                  color: Colors.white,
-                  iconSize: 28,
                 ),
               ],
             ),

@@ -4,12 +4,13 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:language_learning_app/database/user_model.dart';
 
+
 class UserRepository extends GetxController {
   static UserRepository get instance => Get.find();
 
   final db = FirebaseFirestore.instance;
 
-  Future<void> createUser(BuildContext context, UserModel user) async {
+  Future<void> createUser(BuildContext context, UserModel user, String password) async {
     try {
       // Check if the email already exists
       List<String> signInMethods =
@@ -32,7 +33,7 @@ class UserRepository extends GetxController {
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: user.email,
-        password: user.password,
+        password: password,
       );
 
       // Get the authenticated user's UID
@@ -61,7 +62,6 @@ class UserRepository extends GetxController {
       );
     }
   }
-
 
   // Fetch user by email
   Future<UserModel?> getUserByEmail(String email) async {

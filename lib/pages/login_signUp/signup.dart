@@ -27,7 +27,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final userRepo = Get.put(UserRepository());
 
   void creteUser(BuildContext context, UserModel user) {
-    userRepo.createUser(context, user);
+    userRepo.createUser(context, user, _passwordController.text);
   }
 
   Future<void> _signUp() async {
@@ -41,7 +41,6 @@ class _SignupScreenState extends State<SignupScreen> {
       first_name: _firstNameController.text.trim(),
       last_name: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
       currentLanguage: null,
       targetLanguage: null,
     );

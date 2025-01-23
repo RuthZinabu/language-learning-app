@@ -144,27 +144,27 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 16),
 
             // Add Language Button (from second code)
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                side: const BorderSide(color: Color(0xFF410FA3)),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(CupertinoIcons.add, color: Color(0xFF410FA3)),
-                  SizedBox(width: 4),
-                  Text(
-                    "Add Language",
-                    style: TextStyle(color: Color(0xFF410FA3)),
-                  ),
-                ],
-              ),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {},
+            //   style: ElevatedButton.styleFrom(
+            //     backgroundColor: Colors.white,
+            //     side: const BorderSide(color: Color(0xFF410FA3)),
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //   ),
+            //   child: const Row(
+            //     mainAxisSize: MainAxisSize.min,
+            //     children: [
+            //       Icon(CupertinoIcons.add, color: Color(0xFF410FA3)),
+            //       SizedBox(width: 4),
+            //       Text(
+            //         "Add Language",
+            //         style: TextStyle(color: Color(0xFF410FA3)),
+            //       ),
+            //     ],
+            //   ),
+            // ),
             const SizedBox(height: 24),
 
             const SizedBox(height: 24),

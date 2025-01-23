@@ -145,7 +145,7 @@ class _HomeContentState extends State<HomeContent> {
                 children: [
                   // Grammar Quiz Card
                   GestureDetector(
-                    onTap: () => _showComingSoonSnackbar(context),
+                    onTap: () => context.go('/quiz'),
                     child: _buildFeaturedCourseCard(
                       title: "Grammar Quiz",
                       subtitle: "Business English",

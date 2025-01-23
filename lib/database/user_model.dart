@@ -5,7 +5,6 @@ class UserModel {
   final String first_name;
   final String last_name;
   final String email;
-  final String password;
   final String? currentLanguage;
   final String? targetLanguage;
 
@@ -14,7 +13,6 @@ class UserModel {
       required this.first_name,
       required this.last_name,
       required this.email,
-      required this.password,
       required this.currentLanguage,
       required this.targetLanguage});
 
@@ -24,7 +22,6 @@ class UserModel {
       'first_name': first_name,
       'last_name': last_name,
       'email': email,
-      'password': password,
       'currentLanguage': currentLanguage,
       'targetLanguage': targetLanguage,
     };
@@ -37,7 +34,6 @@ class UserModel {
       first_name: json['first_name'],
       last_name: json['last_name'],
       email: json['email'],
-      password: json['password'] ?? "",
       currentLanguage: json['currentLanguage'],
       targetLanguage: json['targetLanguage'],
     );

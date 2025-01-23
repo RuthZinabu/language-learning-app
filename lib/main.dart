@@ -8,6 +8,7 @@ import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
 import 'package:language_learning_app/pages/home_page/home_screen.dart';
 import 'package:language_learning_app/pages/learning_levels/courses.dart';
 import 'package:language_learning_app/pages/learning_levels/numAlphabet.dart';
+import 'package:language_learning_app/pages/learning_levels/quiz.dart';
 import 'package:language_learning_app/pages/login_signUp/login.dart';
 import 'package:language_learning_app/pages/login_signUp/signup.dart';
 import 'package:language_learning_app/pages/onboarding_Page.dart';
@@ -76,6 +77,10 @@ class LanguageApp extends StatelessWidget {
         GoRoute(
           path: '/translate',
           builder: (context, state) => const TranslationPage(),
+        ),
+        GoRoute(
+          path: '/quiz',
+          builder: (context, state) => const LanguageLearningQuiz(),
         ),
         GoRoute(
           path: '/profile',
