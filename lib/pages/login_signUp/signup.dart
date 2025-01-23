@@ -174,20 +174,28 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 20),
                 TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: "Password",
-                    hintText: "Enter your password",
-                    suffixIcon: const Icon(Icons.visibility_off),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      hintText: "Enter your password",
+                      suffixIcon: const Icon(Icons.visibility_off),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
-                  ),
-                  validator: (value) => value!.length >= 6
-                      ? null
-                      : "Password must be at least 6 characters",
-                ),
+                    validator: (value) {
+                      String pattern =
+                          r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$';
+                      RegExp regex = RegExp(pattern);
+                      if (value == null || value.isEmpty) {
+                        return "Password is required";
+                      } else if (!regex.hasMatch(value)) {
+                        return "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character";
+                      } else {
+                        return null;
+                      }
+                    }),
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _confirmPasswordController,
