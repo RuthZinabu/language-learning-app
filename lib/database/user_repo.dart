@@ -8,49 +8,60 @@ class UserRepository extends GetxController {
   static UserRepository get instance => Get.find();
 
   final db = FirebaseFirestore.instance;
-  
 
-  createUser(UserModel user) async {
+  Future<void> createUser(BuildContext context, UserModel user) async {
     try {
-      // First, create the user using Firebase Authentication
+      // Check if the email already exists
+      List<String> signInMethods =
+          await FirebaseAuth.instance.fetchSignInMethodsForEmail(user.email);
+
+      if (signInMethods.isNotEmpty) {
+        // Email already exists, show an error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "The email address is already in use. Please use a different email.",
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return; // Stop further execution
+      }
+
+      // Create the user using Firebase Authentication
       UserCredential userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: user
-            .email, // assuming you are using an email and password for authentication
-        password: user.password, // assuming this field is present
+        email: user.email,
+        password: user.password,
       );
 
-      // Now, get the authenticated user's UID
+      // Get the authenticated user's UID
       String uid = userCredential.user!.uid;
 
       // Set the user data in Firestore using the UID as the document ID
       await FirebaseFirestore.instance
           .collection("Users")
-          .doc(uid) // Use UID as document ID
-          .set(user
-              .toJson()) // Convert user model to JSON and store in Firestore
+          .doc(uid)
+          .set(user.toJson())
           .whenComplete(() {
-        // Show a success message
-        Get.snackbar(
-          "Success",
-          "Your account has been created.",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Your account has been created successfully!'),
+            backgroundColor: Colors.green,
+          ),
         );
       });
     } catch (error) {
       // Handle any errors during authentication or Firestore operations
-      Get.snackbar(
-        "Error",
-        "Something went wrong. Try again.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent.withOpacity(0.1),
-        colorText: Colors.red,
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Something went wrong: ${error.toString()}"),
+          backgroundColor: Colors.red,
+        ),
       );
-      print("Error: ${error.toString()}");
     }
   }
+
 
   // Fetch user by email
   Future<UserModel?> getUserByEmail(String email) async {

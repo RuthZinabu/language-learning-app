@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 import 'package:language_learning_app/database/user_model.dart';
 import 'package:language_learning_app/database/user_repo.dart';
+import 'package:language_learning_app/pages/login_signUp/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
   final String userFirstName;
@@ -13,6 +15,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final AuthService _authService =
+      AuthService(); // Initialize AuthService instance
   late String userFirstName;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -41,6 +45,18 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _logoutUser() async {
+    try {
+      await _authService.logout();
+      context.go('/login'); // Redirect to login page
+    } catch (e) {
+      print('Error during logout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logout failed. Please try again.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,9 +71,33 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => context.go('/home'),
             ),
-            const Icon(Icons.share, color: Colors.white),
+            PopupMenuButton<String>(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              icon: const Icon(Icons.more_vert, color: Colors.white),
+              onSelected: (value) {
+                if (value == 'share') {
+                  // Function to handle sharing
+                } else if (value == 'logout') {
+                  _logoutUser(); // Function to handle logout
+                }
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  const PopupMenuItem(
+                    value: 'share',
+                    child: Text('Share'),
+                  ),
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Text('Logout'),
+                  ),
+                ];
+              },
+            ),
           ],
         ),
       ),
@@ -150,7 +190,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       "French Language", "Level 2", "assets/flags/et.png"),
                   _buildAchievementCard(
                       "French Language", "Level 2", "assets/flags/in.png"),
-                   
                 ],
               ),
             ),

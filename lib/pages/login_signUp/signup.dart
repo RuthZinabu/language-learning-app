@@ -26,8 +26,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   final userRepo = Get.put(UserRepository());
 
-  void creteUser(UserModel user) {
-    userRepo.createUser(user);
+  void creteUser(BuildContext context, UserModel user) {
+    userRepo.createUser(context, user);
   }
 
   Future<void> _signUp() async {
@@ -37,34 +37,26 @@ class _SignupScreenState extends State<SignupScreen> {
       _isLoading = true;
     });
 
-    final user = (UserModel(
+    final user = UserModel(
       first_name: _firstNameController.text.trim(),
       last_name: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
       currentLanguage: null,
       targetLanguage: null,
-    ));
+    );
 
     try {
-      _SignupScreenState().creteUser(user);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Sign up successful!')),
-      );
-
-      // ignore: use_build_context_synchronously
-      context.go('/login');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
+      creteUser(context, user);
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+    context.go('/login');
   }
 
+// if google sign in is clicked
   Future<void> _loginWithGoogle() async {
     setState(() {
       _isLoading = true;
@@ -104,7 +96,7 @@ class _SignupScreenState extends State<SignupScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            context.go('/login');
           },
         ),
       ),
@@ -135,8 +127,16 @@ class _SignupScreenState extends State<SignupScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  validator: (value) =>
-                      value!.isEmpty ? "First name is required" : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'First name is required';
+                    } else if (value.length <= 2) {
+                      return 'Name must be morethan 2 characters long.';
+                    } else if (!RegExp("[a-zA-Z]").hasMatch(value)) {
+                      return "Name must be character.";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
@@ -148,8 +148,16 @@ class _SignupScreenState extends State<SignupScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  validator: (value) =>
-                      value!.isEmpty ? "Last name is required" : null,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Last name is required';
+                    } else if (value.length <= 2) {
+                      return 'Name must be morethan 2 characters long.';
+                    } else if (!RegExp("[a-zA-Z]").hasMatch(value)) {
+                      return "Name must be character.";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
@@ -161,7 +169,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  validator: (value) => value!.contains('@')
+                  validator: (value) => value!.contains('@gmail.com')
                       ? null
                       : "Enter a valid email address",
                 ),

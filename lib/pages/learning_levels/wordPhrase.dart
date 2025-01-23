@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:language_learning_app/pages/home_page/favorites_screen.dart';
+import 'package:language_learning_app/pages/home_page/home_screen.dart';
+import 'package:language_learning_app/pages/learning_levels/language_utils.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
@@ -19,20 +22,10 @@ class WordPhrasePage extends StatefulWidget {
 }
 
 class _WordPhrasePageState extends State<WordPhrasePage> {
+  String currentLanguageCode = 'en';
+  String targetLanguageCode = 'fr';
   final FlutterTts _flutterTts = FlutterTts();
   final GoogleTranslator _translator = GoogleTranslator();
-
-  final Map<String, String> languageCodeMapping = {
-    'English': 'en',
-    'French': 'fr',
-    'Spanish': 'es',
-    'German': 'de',
-    'Hindi': 'hi',
-    'Korean': 'ko',
-    'Italian': 'it',
-    'Amharic': 'am',
-    // more mappings as needed
-  };
 
   final List<String> englishWords = [
     'Hello',
@@ -55,24 +48,22 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
   List<Map<String, String>> translatedWords = [];
   List<Map<String, String>> translatedPhrases = [];
 
+  // Set to track favorite items
+  final Set<String> favoriteSet = {};
+
   @override
   void initState() {
     super.initState();
+    currentLanguageCode = getLanguageCode(currentLanguage!);
+    targetLanguageCode = getLanguageCode(targetLanguage!);
     _fetchTranslations();
-  }
-
-  String getLanguageCode(String languageName) {
-    return languageCodeMapping[languageName] ?? 'en'; // Default to English
   }
 
   Future<void> _fetchTranslations() async {
     final fromLanguageCode = getLanguageCode('English');
-    final currentLanguageCode = getLanguageCode(widget.currentLanguage!);
-    final targetLanguageCode = getLanguageCode(widget.targetLanguage!);
 
     for (var word in englishWords) {
       try {
-        // Translate English to Current Language (if not English)
         final currentTranslation = widget.currentLanguage == 'English'
             ? word
             : (await _translator.translate(
@@ -82,7 +73,6 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
               ))
                 .text;
 
-        // Translate Current Language (or English) to Target Language
         final targetTranslation = await _translator.translate(
           currentTranslation,
           from: widget.currentLanguage == 'English'
@@ -110,7 +100,6 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
 
     for (var phrase in englishPhrases) {
       try {
-        // Translate English to Current Language (if not English)
         final currentTranslation = widget.currentLanguage == 'English'
             ? phrase
             : (await _translator.translate(
@@ -120,7 +109,6 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
               ))
                 .text;
 
-        // Translate Current Language (or English) to Target Language
         final targetTranslation = await _translator.translate(
           currentTranslation,
           from: widget.currentLanguage == 'English'
@@ -179,6 +167,7 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
   }
 
   Widget _buildWordPhraseCard(String word, String translation) {
+    final isFavorite = favoriteSet.contains(word);
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(
@@ -206,13 +195,40 @@ class _WordPhrasePageState extends State<WordPhrasePage> {
                 ),
               ],
             ),
+            const Spacer(), // Push icons to the far right
             IconButton(
               icon: const Icon(Icons.volume_up),
               onPressed: () {
                 _speak(translation);
               },
             ),
-            
+            IconButton(
+              icon: Icon(
+                Icons.favorite,
+                color: isFavorite ? Colors.red : Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (isFavorite) {
+                    favoriteSet.remove(word);
+                    favoriteItems.value.removeWhere((item) =>
+                        item['word'] == word &&
+                        item['translation'] == translation);
+                  } else {
+                    favoriteSet.add(word);
+                    favoriteItems.value
+                        .add({'word': word, 'translation': translation});
+                  }
+                });
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(isFavorite
+                        ? '$word removed from favorites'
+                        : '$word added to favorites'),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

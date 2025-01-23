@@ -6,12 +6,15 @@ import 'package:get/get.dart';
 import 'package:language_learning_app/database/user_repo.dart';
 import 'package:language_learning_app/pages/choose_lang/current_lang.dart';
 import 'package:language_learning_app/pages/home_page/home_screen.dart';
+import 'package:language_learning_app/pages/learning_levels/courses.dart';
+import 'package:language_learning_app/pages/learning_levels/numAlphabet.dart';
 import 'package:language_learning_app/pages/login_signUp/login.dart';
 import 'package:language_learning_app/pages/login_signUp/signup.dart';
 import 'package:language_learning_app/pages/onboarding_Page.dart';
 import 'package:language_learning_app/pages/profile_page/profile_screen.dart';
 import 'package:language_learning_app/pages/splash_Page.dart';
 import 'package:go_router/go_router.dart';
+import 'package:language_learning_app/pages/translator_page/translation.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -60,25 +63,25 @@ class LanguageApp extends StatelessWidget {
         ),
         GoRoute(
           path: '/home',
-          builder: (context, state) {
-            final extra = state.extra as Map<String, dynamic>?;
-
-            final currentLanguage =
-                extra?['currentLanguage'] ?? 'DefaultLanguage1';
-            final targetLanguage =
-                extra?['targetLanguage'] ?? 'DefaultLanguage2';
-
-            return HomeScreen(
-              currentLanguage: currentLanguage,
-              targetLanguage: targetLanguage,
-            );
-          },
+          builder: (context, state) => const HomeScreen(),
+        ),
+        GoRoute(
+          path: '/courses',
+          builder: (context, state) => const Courses(),
+        ),
+        GoRoute(
+          path: '/number-alpha',
+          builder: (context, state) => NumberScreen(),
+        ),
+        GoRoute(
+          path: '/translate',
+          builder: (context, state) => const TranslationPage(),
         ),
         GoRoute(
           path: '/profile',
           builder: (context, state) => ProfilePage(
             userFirstName: '',
-          ), // Replace 'someArgument' with the actual argument needed
+          ),
         ),
         GoRoute(
           path: '/current-language-selection',

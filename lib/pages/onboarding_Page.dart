@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:language_learning_app/pages/login_signUp/login.dart';
 
 class OnboardingPage extends StatelessWidget {
   const OnboardingPage({super.key});

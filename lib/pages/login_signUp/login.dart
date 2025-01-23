@@ -48,7 +48,7 @@ class _LoginState extends State<Login> {
             // If languages are already selected, redirect to HomeScreen
             // ignore: use_build_context_synchronously
             context.go(
-              '/home', // Replace '/home' with your actual home route
+              '/home',  
               extra: {
                 'currentLanguage': data['currentLanguage'],
                 'targetLanguage': data['targetLanguage'],

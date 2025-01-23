@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:language_learning_app/pages/home_page/home_screen.dart';
 import 'package:language_learning_app/pages/learning_levels/wordPhrase.dart';
-import 'package:language_learning_app/pages/learning_levels/numAlphabet.dart';
 
 class Courses extends StatefulWidget {
-  final String currentLanguage;
-  final String targetLanguage;
-
-  const Courses({
-    Key? key,
-    required this.currentLanguage,
-    required this.targetLanguage,
-  }) : super(key: key);
+  const Courses({super.key});
 
   @override
   _CoursesState createState() => _CoursesState();
@@ -34,12 +28,22 @@ class _CoursesState extends State<Courses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            context.go('/home');
+          },
+        ),
+        title: const Text('Courses'),
+        backgroundColor: const Color(0xFF410FA3),
+      ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              '${widget.currentLanguage} to ${widget.targetLanguage}',
+              '${currentLanguage} to ${targetLanguage}',
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -194,16 +198,7 @@ class _CoursesState extends State<Courses> {
               onPressed: () {
                 if (title == 'Alphabet and Numbers') {
                   // Navigate to NumberScreen if the second button is clicked
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NumberScreen(
-                         title: title,
-                        currentLanguage: widget.currentLanguage,
-                        targetLanguage: widget.targetLanguage,
-                      ),
-                    ),
-                  );
+                  context.go('/number-alpha');
                 } else {
                   // Navigate to WordPhrasePage for other buttons
                   Navigator.push(
@@ -211,8 +206,8 @@ class _CoursesState extends State<Courses> {
                     MaterialPageRoute(
                       builder: (context) => WordPhrasePage(
                         title: title,
-                        currentLanguage: widget.currentLanguage,
-                        targetLanguage: widget.targetLanguage,
+                        currentLanguage: currentLanguage,
+                        targetLanguage: targetLanguage,
                       ),
                     ),
                   );

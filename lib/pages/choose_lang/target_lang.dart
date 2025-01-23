@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:language_learning_app/pages/home_page/home_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:language_learning_app/widgets/language_selector.dart';
 
 class TargetLanguageSelectionScreen extends StatefulWidget {
@@ -62,7 +62,7 @@ class _TargetLanguageSelectionScreenState
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            context.go('/current-language-selection');
           },
         ),
         title: const Text(
@@ -94,15 +94,8 @@ class _TargetLanguageSelectionScreenState
                   // Save the current language to Firestore
                   await saveTargetLang(user.uid, selectedTargetLanguage);
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => HomeScreen(
-                        currentLanguage: widget.currentLanguage,
-                        targetLanguage: selectedTargetLanguage,
-                      ),
-                    ),
-                  );
+                  // ignore: use_build_context_synchronously
+                  context.go('/home');
                 } else {
                   // Show an error if the user is not logged in
                   ScaffoldMessenger.of(context).showSnackBar(

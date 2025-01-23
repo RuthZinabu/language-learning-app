@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:language_learning_app/pages/home_page/home_screen.dart';
+import 'package:language_learning_app/pages/learning_levels/language_utils.dart';
 import 'package:translator/translator.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class NumberScreen extends StatefulWidget {
-  final String title;
-  final String currentLanguage;
-  final String targetLanguage;
-
   NumberScreen({
-    Key? key,
-    required this.currentLanguage,
-    required this.targetLanguage,
-    required this.title,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<NumberScreen> createState() => _NumberScreenState();
 }
 
 class _NumberScreenState extends State<NumberScreen> {
-  int currentNumber = 1;  
+  int currentNumber = 1;
   final List<String> numberWords = [
     "one",
     "two",
@@ -38,20 +34,15 @@ class _NumberScreenState extends State<NumberScreen> {
 
   String translatedNumber = "one";
 
-  final Map<String, String> languageCodeMapping = {
-    'English': 'en',
-    'French': 'fr',
-    'Spanish': 'es',
-    'German': 'de',
-    'Hindi': 'hi',
-    'Korean': 'ko',
-    'Italian': 'it',
-    'Amharic': 'am',
-  };
+  late String currentLanguageCode;
+
+  late String targetLanguageCode;
 
   @override
   void initState() {
     super.initState();
+    currentLanguageCode = getLanguageCode(currentLanguage!);
+    targetLanguageCode = getLanguageCode(targetLanguage!);
     _translateNumber();
   }
 
@@ -73,12 +64,8 @@ class _NumberScreenState extends State<NumberScreen> {
     });
   }
 
-  String getLanguageCode(String languageName) {
-    return languageCodeMapping[languageName] ?? 'en'; 
-  }
-
   Future<void> _translateNumber() async {
-    final targetLanguageCode = getLanguageCode(widget.targetLanguage);
+    final targetLanguageCode = getLanguageCode(targetLanguage!);
     final word = numberWords[currentNumber - 1];
 
     try {
@@ -98,7 +85,7 @@ class _NumberScreenState extends State<NumberScreen> {
   }
 
   Future<void> _speak() async {
-    final targetLanguageCode = getLanguageCode(widget.targetLanguage);
+    final targetLanguageCode = getLanguageCode(targetLanguage!);
     await _flutterTts.setLanguage(targetLanguageCode);
     await _flutterTts.speak(translatedNumber);
   }
@@ -115,7 +102,7 @@ class _NumberScreenState extends State<NumberScreen> {
             left: 20,
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                context.go('/courses');
               },
               child: Image.asset(
                 'assets/images/back-cloud.png',
@@ -130,7 +117,7 @@ class _NumberScreenState extends State<NumberScreen> {
             right: 20,
             child: GestureDetector(
               onTap: () {
-                Navigator.pop(context);
+                context.go('/courses');
               },
               child: Column(
                 children: [
