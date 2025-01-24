@@ -26,8 +26,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   final userRepo = Get.put(UserRepository());
 
-  void creteUser(BuildContext context, UserModel user) {
-    userRepo.createUser(context, user, _passwordController.text);
+  void creteUser(BuildContext context, UserModel user, String password) {
+    userRepo.createUser(context, user, password);
   }
 
   Future<void> _signUp() async {
@@ -46,7 +46,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
 
     try {
-      creteUser(context, user);
+      creteUser(context, user, _passwordController.text);
     } finally {
       setState(() {
         _isLoading = false;
